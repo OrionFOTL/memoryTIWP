@@ -8,9 +8,53 @@ $(document).ready(function () {
 	var punkty = 0;
 	var ruchy = 0;
 
-	generateCards();
-	assignCards();
-	$("#cardsNumber").text(numberofCards);
+	start();
+
+	function start() {
+		cards = [];
+		currentCards = [];
+		punkty = 0;
+		ruchy = 0;
+		$("#container").html("");
+		$("#cardsNumber").text(numberofCards);
+		generateCards();
+		assignCards();
+		$("#punkty").html("Twoje punkty: " + punkty);
+		$("#ruchy").html(ruchy);
+
+		$(".card").click(function (e) {  //przy kliknięciu na kartę
+
+			var clickedCardId = parseInt($(this).attr('id'));
+
+			//jesli kliknięta karta jest zakryta oraz odkryte są tylko jedna lub żadna karta
+			if (currentCards.length < 2 && !cards[clickedCardId].uncovered) {
+
+				$(this).animate({ height: "toggle" }, {
+					duration: flipSpeed,
+					done: function () {
+						$(this).css({ "background-image": "url(" + cards[clickedCardId].img + ".png)" });
+					}
+				});
+				//pokaż obrazek na karcie
+				$(this).animate({ height: "toggle" }, flipSpeed);
+				cards[clickedCardId].uncovered = true;											  //ustaw kartę jako odkryta
+				currentCards.push(cards[clickedCardId]);										  //dodaj kartę do odkrytych
+				currentCards[currentCards.length - 1].id = clickedCardId;
+				if (currentCards.length == 2) {												  //jeśli odkryto już parę kart
+					if (currentCards[0].img == currentCards[1].img) {	 //para
+						addScore(10);
+						currentCards = [];
+					}
+					else {												 //nie ma pary
+						addScore(-5);
+						timeout = setTimeout(resetFailedCards, 1300);
+					}
+					ruchy++;
+					$("#ruchy").html(ruchy);
+				}
+			}
+		});
+	}
 
 	function generateCards() {
 		for (let i = 0; i < numberofCards; i++) {
@@ -23,39 +67,6 @@ $(document).ready(function () {
 		}
 		cards = shuffle(cards);
 	}
-
-	$(".card").click(function (e) {  //przy kliknięciu na kartę
-
-		var clickedCardId = parseInt($(this).attr('id'));
-
-		//jesli kliknięta karta jest zakryta oraz odkryte są tylko jedna lub żadna karta
-		if (currentCards.length < 2 && !cards[clickedCardId].uncovered) {
-
-			$(this).animate({ height: "toggle" }, {
-				duration: flipSpeed,
-				done: function () {
-					$(this).css({ "background-image": "url(" + cards[clickedCardId].img + ".png)" });
-				}
-			});
-			//pokaż obrazek na karcie
-			$(this).animate({ height: "toggle" }, flipSpeed);
-			cards[clickedCardId].uncovered = true;											  //ustaw kartę jako odkryta
-			currentCards.push(cards[clickedCardId]);										  //dodaj kartę do odkrytych
-			currentCards[currentCards.length - 1].id = clickedCardId;
-			if (currentCards.length == 2) {												  //jeśli odkryto już parę kart
-				if (currentCards[0].img == currentCards[1].img) {	 //para
-					addScore(10);
-					currentCards = [];
-				}
-				else {												 //nie ma pary
-					addScore(-5);
-					timeout = setTimeout(resetFailedCards, 1300);
-				}
-				ruchy++;
-				$("#ruchy").html(ruchy);
-			}
-		}
-	});
 
 	function resetFailedCards() {
 		$("#" + currentCards[0].id).removeAttr('style');
@@ -78,6 +89,23 @@ $(document).ready(function () {
 		}
 	}
 
+	$("#cardLess").click(function (e) {
+		numberofCards -= 2;
+		$("cardsNumber").text(numberofCards);
+		start();
+	});
+	$("#cardMore").click(function (e) {
+		if (parseInt($("#cardsNumber").text()) < 32) {
+			numberofCards += 2;
+			$("#cardsNumber").text(numberofCards);
+			start();
+		}
+		else alert("Brakuje obrazków aby zrobić więcej kart!")
+	});
+
+	$("#restart").click(function (e) {
+		start();
+	});
 
 });
 
