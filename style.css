@@ -1,5 +1,6 @@
 #container{
     max-width: 500px;
+    float: left;
 }
 
 .cardContainer {
@@ -25,4 +26,8 @@ img {
     max-width: 80%; 
     max-height: 80%;
     overflow: hidden;
+}
+
+#opis {
+    float: left;
 }

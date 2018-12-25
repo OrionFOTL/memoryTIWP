@@ -3,6 +3,7 @@ $(document).ready(function () {
 	var numberofCards = 20;
 	var cards = [];
 	var currentCards = [];
+	var punkty = 0;
 
 	for (let i = 0; i < numberofCards; i++) {
 		$("#container").append("<div class=\"cardContainer\"><div id=\"" + i + "\" class=\"card\"></div></div>");
@@ -20,20 +21,23 @@ $(document).ready(function () {
 		//jesli kliknięta karta jest zakryta oraz odkryte są tylko jedna lub żadna karta
 		if (currentCards.length < 2 && !cards[clickedCardId].uncovered) {
 
-			$(this).animate({height: "toggle"}, {done: function() {
-				$(this).css({ "background-image": "url(" + cards[clickedCardId].img + ".png)" });	
-			}});
-			 //pokaż obrazek na karcie
-			$(this).animate({height: "toggle"});
+			$(this).animate({ height: "toggle" }, {
+				done: function () {
+					$(this).css({ "background-image": "url(" + cards[clickedCardId].img + ".png)" });
+				}
+			});
+			//pokaż obrazek na karcie
+			$(this).animate({ height: "toggle" });
 			cards[clickedCardId].uncovered = true;											  //ustaw kartę jako odkryta
 			currentCards.push(cards[clickedCardId]);										  //dodaj kartę do odkrytych
 			currentCards[currentCards.length - 1].id = clickedCardId;
 			if (currentCards.length == 2) {												  //jeśli odkryto już parę kart
 				if (currentCards[0].img == currentCards[1].img) {	 //para
-					alert("para!");
+					addScore(10);
 					currentCards = [];
 				}
 				else {												 //nie ma pary
+					addScore(-5);
 					timeout = setTimeout(resetFailedCards, 1300);
 				}
 			}
@@ -46,6 +50,19 @@ $(document).ready(function () {
 		cards[currentCards[0].id].uncovered = false;
 		cards[currentCards[1].id].uncovered = false;
 		currentCards = [];
+	}
+	function addScore(zmiana) {
+		punkty += zmiana;
+		$("#punkty").html(punkty);
+		if (zmiana > 0) {
+			$("#punkty").animate({ fontSize: "150%", color: "green" }, 200, function () {
+				$("#punkty").animate({ fontSize: "100%", color: "black" }, 200)
+			});
+		} else {
+			$("#punkty").animate({ fontSize: "150%", color: "red" }, 200, function () {
+				$("#punkty").animate({ fontSize: "100%", color: "black" }, 200)
+			});
+		}
 	}
 
 
