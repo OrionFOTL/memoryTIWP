@@ -140,6 +140,7 @@ $(document).ready(function () {
 		}
 		$("#eksport").attr('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(eksportVals));
 		$("#eksport").attr('download', 'wyniki.txt');
+		$("#eksport").text('Zapisz wyniki do pliku!');
 	}
 });
 
