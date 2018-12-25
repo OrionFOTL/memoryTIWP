@@ -1,0 +1,28 @@
+#container{
+    max-width: 500px;
+}
+
+.cardContainer {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    float: left;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    height: 100px;
+    width: 100px;
+}
+
+.card {
+    height: 100%;
+    width: 100%;
+    background: #71d1e2;
+    background-size: auto 80%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+img { 
+    max-width: 80%; 
+    max-height: 80%;
+    overflow: hidden;
+}
