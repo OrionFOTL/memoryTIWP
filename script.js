@@ -1,18 +1,28 @@
 $(document).ready(function () {
 
+	var flipSpeed = 300;
+
 	var numberofCards = 20;
 	var cards = [];
 	var currentCards = [];
 	var punkty = 0;
+	var ruchy = 0;
 
-	for (let i = 0; i < numberofCards; i++) {
-		$("#container").append("<div class=\"cardContainer\"><div id=\"" + i + "\" class=\"card\"></div></div>");
-	}
+	generateCards();
+	assignCards();
+	$("#cardsNumber").text(numberofCards);
 
-	for (let i = 0; i < numberofCards; i++) {
-		cards.push({ img: Math.floor(i / 2), uncovered: false });
+	function generateCards() {
+		for (let i = 0; i < numberofCards; i++) {
+			$("#container").append("<div class=\"cardContainer\"><div id=\"" + i + "\" class=\"card\"></div></div>");
+		}
 	}
-	cards = shuffle(cards);
+	function assignCards() {
+		for (let i = 0; i < numberofCards; i++) {
+			cards.push({ img: Math.floor(i / 2), uncovered: false });
+		}
+		cards = shuffle(cards);
+	}
 
 	$(".card").click(function (e) {  //przy kliknięciu na kartę
 
@@ -22,12 +32,13 @@ $(document).ready(function () {
 		if (currentCards.length < 2 && !cards[clickedCardId].uncovered) {
 
 			$(this).animate({ height: "toggle" }, {
+				duration: flipSpeed,
 				done: function () {
 					$(this).css({ "background-image": "url(" + cards[clickedCardId].img + ".png)" });
 				}
 			});
 			//pokaż obrazek na karcie
-			$(this).animate({ height: "toggle" });
+			$(this).animate({ height: "toggle" }, flipSpeed);
 			cards[clickedCardId].uncovered = true;											  //ustaw kartę jako odkryta
 			currentCards.push(cards[clickedCardId]);										  //dodaj kartę do odkrytych
 			currentCards[currentCards.length - 1].id = clickedCardId;
@@ -40,6 +51,8 @@ $(document).ready(function () {
 					addScore(-5);
 					timeout = setTimeout(resetFailedCards, 1300);
 				}
+				ruchy++;
+				$("#ruchy").html(ruchy);
 			}
 		}
 	});
@@ -53,14 +66,14 @@ $(document).ready(function () {
 	}
 	function addScore(zmiana) {
 		punkty += zmiana;
-		$("#punkty").html(punkty);
+		$("#punkty").html("Twoje punkty: " + punkty);
 		if (zmiana > 0) {
-			$("#punkty").animate({ fontSize: "150%", color: "green" }, 200, function () {
-				$("#punkty").animate({ fontSize: "100%", color: "black" }, 200)
+			$("#punkty").animate({ color: "#09ff00" }, 300, function () {
+				$("#punkty").animate({ color: "black" }, 300)
 			});
 		} else {
-			$("#punkty").animate({ fontSize: "150%", color: "red" }, 200, function () {
-				$("#punkty").animate({ fontSize: "100%", color: "black" }, 200)
+			$("#punkty").animate({ color: "red" }, 300, function () {
+				$("#punkty").animate({ color: "black" }, 300)
 			});
 		}
 	}
