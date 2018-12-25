@@ -7,6 +7,9 @@ $(document).ready(function () {
 	var currentCards = [];
 	var punkty = 0;
 	var ruchy = 0;
+	var pozostaleKarty = 20;
+
+	var winners = [];
 
 	start();
 
@@ -15,6 +18,7 @@ $(document).ready(function () {
 		currentCards = [];
 		punkty = 0;
 		ruchy = 0;
+		pozostaleKarty = numberofCards;
 		$("#container").html("");
 		$("#cardsNumber").text(numberofCards);
 		generateCards();
@@ -43,7 +47,9 @@ $(document).ready(function () {
 				if (currentCards.length == 2) {												  //jeśli odkryto już parę kart
 					if (currentCards[0].img == currentCards[1].img) {	 //para
 						addScore(10);
+						pozostaleKarty -= 2;
 						currentCards = [];
+						checkIfFinished();
 					}
 					else {												 //nie ma pary
 						addScore(-5);
@@ -86,6 +92,25 @@ $(document).ready(function () {
 			$("#punkty").animate({ color: "red" }, 300, function () {
 				$("#punkty").animate({ color: "black" }, 300)
 			});
+		}
+	}
+
+	function checkIfFinished() {
+		if (pozostaleKarty == 0) {
+			winners.push({name: prompt("Wygrałeś! Wpisz swoje imię:"), score: punkty});
+			winners.sort(compareWinners);
+			refreshScoreboard();
+		}
+	}
+
+	function compareWinners(a,b){
+		return b.score - a.score;
+	}
+
+	function refreshScoreboard() {
+		$("#scoreboard").empty();
+		for (let i = 0; i < winners.length; i++) {
+			$("#scoreboard").append("<li>" + winners[i].name + ": " + winners[i].score + " punktów");
 		}
 	}
 
