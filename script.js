@@ -3,8 +3,8 @@ $(document).ready(function () {
 	var flipSpeed = 300;
 
 	var numberofCards = 20;
-	var cards = [];
-	var currentCards = [];
+	var cards = [];						//tablica na wszystkie karty; wartość to identyfikator obrazka przypisanego karcie o danym indeksie
+	var currentCards = [];				//tablica na obecnie odkrywaną parę kart
 	var punkty = 0;
 	var ruchy = 0;
 	var pozostaleKarty = 20;
@@ -19,32 +19,35 @@ $(document).ready(function () {
 		punkty = 0;
 		ruchy = 0;
 		pozostaleKarty = numberofCards;
-		$("#container").html("");
-		$("#cardsNumber").text(numberofCards);
-		generateCards();
-		assignCards();
-		$("#punkty").html("Twoje punkty: " + punkty);
-		$("#ruchy").html(ruchy);
+		$("#container").html("");							//czyszczenie diva z kartami
+		$("#cardsNumber").text(numberofCards);				//update liczby kart
+		generateCards();									//generowanie divów na karty
+		assignCards();										//przypisanie każdej karcie obrazka
+		$("#punkty").html("Twoje punkty: " + punkty);		//update punktów
+		$("#ruchy").html(ruchy);							//update ruchów
 
-		$(".card").on('click', function (e) {  //przy kliknięciu na kartę
+		$(".card").on('click', function (e) {  				//przy kliknięciu na kartę
 
 			var clickedCardId = parseInt($(this).attr('id'));
 
 			//jesli kliknięta karta jest zakryta oraz odkryte są tylko jedna lub żadna karta
 			if (currentCards.length < 2 && !cards[clickedCardId].uncovered) {
 
+				//animacja odwaracania
 				$(this).animate({ height: "toggle" }, {
 					duration: flipSpeed,
-					done: function () {
+					done: function () {						//ustawienie tła karty na przypisany obrazek
 						$(this).css({ "background-image": "url(" + cards[clickedCardId].img + ".png)" });
 					}
 				});
-				//pokaż obrazek na karcie
 				$(this).animate({ height: "toggle" }, flipSpeed);
-				cards[clickedCardId].uncovered = true;											  //ustaw kartę jako odkryta
-				currentCards.push(cards[clickedCardId]);										  //dodaj kartę do odkrytych
+
+				cards[clickedCardId].uncovered = true;								//ustaw kartę jako odkryta
+				currentCards.push(cards[clickedCardId]);							//dodaj kartę do odkrytych
 				currentCards[currentCards.length - 1].id = clickedCardId;
-				if (currentCards.length == 2) {												  //jeśli odkryto już parę kart
+
+				//jeśli kliknięcie odkryło drugą kartę z kolei, sprawdź czy para kart ma ten sam owoc
+				if (currentCards.length == 2) {
 					if (currentCards[0].img == currentCards[1].img) {	 //para
 						addScore(10);
 						pozostaleKarty -= 2;
@@ -62,19 +65,19 @@ $(document).ready(function () {
 		});
 	}
 
-	function generateCards() {
+	function generateCards() {						//wygeneruj divy z kartami
 		for (let i = 0; i < numberofCards; i++) {
 			$("#container").append("<div class=\"cardContainer\"><div id=\"" + i + "\" class=\"card\"></div></div>");
 		}
 	}
-	function assignCards() {
+	function assignCards() {						//przypisz kartom kolejno ID obrazków, po dwie karty na jeden ID
 		for (let i = 0; i < numberofCards; i++) {
 			cards.push({ img: Math.floor(i / 2), uncovered: false });
 		}
-		cards = shuffle(cards);
+		cards = shuffle(cards);						//pomieszaj karty
 	}
 
-	function resetFailedCards() {
+	function resetFailedCards() {					//zasłoń ostatnią parę kart jeśli obrazki się nie zgadzały
 		$("#" + currentCards[0].id).removeAttr('style');
 		$("#" + currentCards[1].id).removeAttr('style');
 		cards[currentCards[0].id].uncovered = false;
@@ -103,7 +106,7 @@ $(document).ready(function () {
 		}
 	}
 
-	function compareWinners(a, b) {
+	function compareWinners(a, b) {				//funcja używana przez winners.sort() do sortowania wyników
 		return b.score - a.score;
 	}
 
@@ -116,9 +119,11 @@ $(document).ready(function () {
 	}
 
 	$("#cardLess").click(function (e) {
-		numberofCards -= 2;
-		$("cardsNumber").text(numberofCards);
-		start();
+		if (parseInt($("#cardsNumber").text()) > 2) {
+			numberofCards -= 2;
+			$("cardsNumber").text(numberofCards);
+			start();
+		}
 	});
 	$("#cardMore").click(function (e) {
 		if (parseInt($("#cardsNumber").text()) < 32) {
@@ -133,10 +138,10 @@ $(document).ready(function () {
 		start();
 	});
 
-	function prepareDownload() {
+	function prepareDownload() {					//zapis wyników do pliku
 		var eksportVals = "";
 		for (let i = 0; i < winners.length; i++) {
-			eksportVals += i+1 + ". " + winners[i].name + ": " + winners[i].score + " punktów\n";
+			eksportVals += i + 1 + ". " + winners[i].name + ": " + winners[i].score + " punktów\n";
 		}
 		$("#eksport").attr('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(eksportVals));
 		$("#eksport").attr('download', 'wyniki.txt');
@@ -144,17 +149,16 @@ $(document).ready(function () {
 	}
 });
 
-function shuffle(array) {
+function shuffle(array) {							//tasowanie kart
 	var currentIndex = array.length, temporaryValue, randomIndex;
-
-	// While there remain elements to shuffle...
+	//jeśli są jeszcze nieprzetasowane elementy
 	while (0 !== currentIndex) {
 
-		// Pick a remaining element...
+		// weź nieprzetasowany element
 		randomIndex = Math.floor(Math.random() * currentIndex);
 		currentIndex -= 1;
 
-		// And swap it with the current element.
+		// zamień z bieżącym elementem
 		temporaryValue = array[currentIndex];
 		array[currentIndex] = array[randomIndex];
 		array[randomIndex] = temporaryValue;
